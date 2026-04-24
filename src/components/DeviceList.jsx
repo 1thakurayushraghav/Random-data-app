@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import DeviceCard from './DeviceCard';
 import toast from 'react-hot-toast';
-import { deviceAPI } from '../api';
+import { deviceAPI } from '../api/api';
 
 const DeviceList = ({ refreshTrigger, onStatsUpdate }) => {
   const [devices, setDevices] = useState([]);

@@ -1,22 +1,12 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
-import { deviceAPI } from '../api';
+import { deviceAPI } from '../api/api';
 
 const CPCBFetch = ({ onDeviceAdded }) => {
   const [RTUserialNumber, setRTUserialNumber] = useState('');
   const [isFetching, setIsFetching] = useState(false);
   const [responseDetails, setResponseDetails] = useState(null);
-
-  // Get CPCB API URL from environment variables
-  const CPCB_API_URL = import.meta.env.VITE_CPCB_API_URL;
-  
-  // Create axios instance for external CPCB API
-  const cpcbApi = axios.create({
-    baseURL: CPCB_API_URL,
-    headers: { 'Content-Type': 'application/json' },
-    timeout: 15000
-  });
 
   const handleFetch = async (e) => {
     e.preventDefault();
@@ -31,15 +21,13 @@ const CPCBFetch = ({ onDeviceAdded }) => {
 
     try {
       // Direct GET call to external CPCB API
-      console.log(`📡 Fetching from: ${CPCB_API_URL}/device?search=${RTUserialNumber}`);
-      
-      const response = await cpcbApi.get('/device', {
+      console.log(`📡 Fetching via proxy: /api/cpcb?search=${RTUserialNumber}`);
+
+      const response = await axios.get('/api/cpcb', {
         params: {
-          search: RTUserialNumber,
-          list: true
+          search: RTUserialNumber
         }
       });
-
       const data = response.data;
       const statusCode = response.status;
 
@@ -51,7 +39,7 @@ const CPCBFetch = ({ onDeviceAdded }) => {
 
       if (data && data.stations && data.stations.length > 0) {
         const station = data.stations[0];
-        
+
         // Prepare device data from CPCB response
         const deviceData = {
           RTUserialNumber: station.RTUserialNumber,
@@ -99,16 +87,16 @@ const CPCBFetch = ({ onDeviceAdded }) => {
       }
     } catch (error) {
       console.error('CPCB API Error:', error);
-      
+
       let statusCode = error.response?.status || 500;
       let errorMessage = error.response?.data?.message || error.message || "Failed to fetch from CPCB API";
-      
+
       setResponseDetails({
         statusCode: statusCode,
         status: "Failed",
         message: errorMessage
       });
-      
+
       toast.error(`CPCB API Error: ${errorMessage}`);
     } finally {
       setIsFetching(false);
@@ -146,20 +134,18 @@ const CPCBFetch = ({ onDeviceAdded }) => {
       </form>
 
       {responseDetails && (
-        <div className={`mt-4 p-3 rounded-lg ${
-          responseDetails.status === 'Success' 
-            ? 'bg-green-50 border border-green-200' 
-            : responseDetails.status === 'Partial'
+        <div className={`mt-4 p-3 rounded-lg ${responseDetails.status === 'Success'
+          ? 'bg-green-50 border border-green-200'
+          : responseDetails.status === 'Partial'
             ? 'bg-yellow-50 border border-yellow-200'
             : 'bg-red-50 border border-red-200'
-        }`}>
-          <p className={`text-sm font-medium ${
-            responseDetails.status === 'Success' 
-              ? 'text-green-800' 
-              : responseDetails.status === 'Partial'
+          }`}>
+          <p className={`text-sm font-medium ${responseDetails.status === 'Success'
+            ? 'text-green-800'
+            : responseDetails.status === 'Partial'
               ? 'text-yellow-800'
               : 'text-red-800'
-          }`}>
+            }`}>
             <strong>CPCB API Response:</strong><br />
             Status: {responseDetails.status}<br />
             HTTP Code: {responseDetails.statusCode}<br />
@@ -171,7 +157,9 @@ const CPCBFetch = ({ onDeviceAdded }) => {
       <div className="mt-4 p-3 bg-blue-50 rounded-lg">
         <p className="text-xs sm:text-sm text-blue-800">
           <strong>📌 Note:</strong> This makes a GET request to:<br />
-          <code className="text-xs break-all">{CPCB_API_URL}/device?search={'{RTUserialNumber}'}&list=true</code><br />
+          <code className="text-xs break-all">
+            /api/cpcb?search={'{RTUserialNumber}'}
+          </code><br />
           The response from CPCB API is then stored in your database.
         </p>
       </div>

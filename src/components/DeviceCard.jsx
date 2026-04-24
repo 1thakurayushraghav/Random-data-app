@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
-import { deviceAPI } from '../api';
+import { deviceAPI } from '../api/api';
 
 const DeviceCard = ({ device, onToggle, onDelete, onRefresh }) => {
   const [isToggling, setIsToggling] = useState(false);
