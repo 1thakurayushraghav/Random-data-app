@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
-import { deviceAPI } from '../api/api';
+import { deviceAPI } from '../../api/api';
 
 const DeviceForm = ({ onDeviceAdded }) => {
   const [formData, setFormData] = useState({

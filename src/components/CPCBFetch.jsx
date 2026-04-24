@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
-import { deviceAPI } from '../api/api';
+import { deviceAPI } from '../../api/api';
 
 const CPCBFetch = ({ onDeviceAdded }) => {
   const [RTUserialNumber, setRTUserialNumber] = useState('');

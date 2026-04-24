@@ -11,9 +11,10 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         '/api/cpcb': {
-          target: env.VITE_CPCB_API_URL,
+          target: env.VITE_CPCB_API_URL, // ✅ FIXED
           changeOrigin: true,
           secure: false,
+          rewrite: (path) => path.replace('/api/cpcb', '/device')
         }
       }
     }
